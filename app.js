@@ -1,14 +1,20 @@
 const express = require("express");
+const morgan = require("morgan");
 const noDuplicates = require("./middleware/noDuplicates");
+
+
+
 const app = express();
 const { v4: uuid4 } = require("uuid")
 const port = 3000;
 
 app.use(express.json());
 
-app.use(noDuplicates);
+app.use(morgan("common"));
+
 
 let contacts = [];
+
 
 app.get("/", (req, res) => {
     res.status(200).send(contacts);
@@ -16,6 +22,7 @@ app.get("/", (req, res) => {
 
 app.get("/:phoneNumber", (req, res) => {
     const { phoneNumber } = req.params;
+
     const user = contacts.find((contact) => contact.phoneNumber === phoneNumber)
     if (user) {
         return res.status(200).send(`<h1>${user.id}---${user.phoneNumber}----${user.fullName} </h1>`)
@@ -26,13 +33,19 @@ app.get("/:phoneNumber", (req, res) => {
     }
 })
 
-app.post("/", noDuplicates, (req, res) => {
+app.post("/", (req, res) => {
     // const {phoneNumber,Name} = req.body;
     const id = uuid4();
     const body = req.body;
+    const contact = contacts.find((entry) => entry.phoneNumber === body.phoneNumber)
+
     const updated_body = { ...body, id: id }
     contacts.push(updated_body);
-    res.status(201).send(contacts);
+    if (contact) {
+        return res.status(400).send("<h1>Duplicate Entry</h1>")
+    }
+
+    return res.status(201).send(contacts);
 })
 
 
