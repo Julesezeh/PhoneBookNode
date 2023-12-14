@@ -1,6 +1,5 @@
 const express = require("express");
 const morgan = require("morgan");
-const noDuplicates = require("./middleware/noDuplicates");
 
 
 
@@ -38,17 +37,37 @@ app.post("/", (req, res) => {
     const id = uuid4();
     const body = req.body;
     const contact = contacts.find((entry) => entry.phoneNumber === body.phoneNumber)
-
-    const updated_body = { ...body, id: id }
-    contacts.push(updated_body);
     if (contact) {
         return res.status(400).send("<h1>Duplicate Entry</h1>")
+    } else {
+        const updated_body = { ...body, id: id }
+        contacts.push(updated_body);
+        return res.status(201).send(contacts);
     }
 
-    return res.status(201).send(contacts);
 })
 
 
+app.patch("/:id", (req, res) => {
+    const { id } = req.params;
+    const { phoneNumber, name } = req.body;
+    const contact = contacts.find((contact) => contact.id === id)
+    if (contact) {
+        if (phoneNumber) {
+            updatedContact = { ...contact, phoneNumber: phoneNumber }
+        } else if (name) {
+            updatedContact = { ...contact, name: name }
+        }
+        if (updatedContact) {
+            return res.status(200).send(updatedContact)
+        } else {
+            return res.status(200).send(contact)
+        }
+
+    } else {
+        return res.status(400).send("<h3>Bad request</h3>")
+    }
+})
 
 app.listen(port, () => {
     console.log(`Server is currently listening on localhost:${port}`)
