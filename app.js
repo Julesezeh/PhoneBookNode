@@ -54,15 +54,13 @@ app.patch("/:id", (req, res) => {
     const contact = contacts.find((contact) => contact.id === id)
     if (contact) {
         if (phoneNumber) {
-            updatedContact = { ...contact, phoneNumber: phoneNumber }
+            contact.phoneNumber = phoneNumber
         } else if (name) {
-            updatedContact = { ...contact, name: name }
+            contact.name = name
         }
-        if (updatedContact) {
-            return res.status(200).send(updatedContact)
-        } else {
-            return res.status(200).send(contact)
-        }
+
+        return res.status(200).send(contact)
+
 
     } else {
         return res.status(400).send("<h3>Bad request</h3>")
