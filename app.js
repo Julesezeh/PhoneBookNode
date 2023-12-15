@@ -21,8 +21,14 @@ app.get("/", (req, res) => {
 
 app.get("/:phoneNumber", (req, res) => {
     const { phoneNumber } = req.params;
+    var user = null
 
-    const user = contacts.find((contact) => contact.phoneNumber === phoneNumber)
+    if (phoneNumber.length > 19) {
+        user = contacts.find((contact) => contact.id === phoneNumber)
+    } else {
+        user = contacts.find((contact) => contact.phoneNumber === phoneNumber)
+    }
+
     if (user) {
         return res.status(200).send(`<h1>${user.id}---${user.phoneNumber}----${user.fullName} </h1>`)
     } else if (phoneNumber) {
