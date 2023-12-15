@@ -67,6 +67,19 @@ app.patch("/:id", (req, res) => {
     }
 })
 
+app.delete("/:id", (req, res) => {
+    const { id } = req.params
+    if (id) {
+        contacts = contacts.filter((contactX) => contactX.id !== id)
+        return res.status(200).send(contacts)
+    } else {
+        return res.status(400).send("<h1>Bad request</h1>")
+    }
+})
+
+
+
+
 app.listen(port, () => {
     console.log(`Server is currently listening on localhost:${port}`)
 })
